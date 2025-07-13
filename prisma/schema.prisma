@@ -8,12 +8,59 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Evento {
+  idEvento       Int      @id @default(autoincrement())
+  titulo         String
+  tipo           String
+  dataHoraInicio DateTime
+  dataHoraFim    DateTime
+  taxa           Float?
+  edicao         String?
+
+  atividades Atividade[] @relation("EventoAtividades")
+
+  @@map("evento")
+}
+
+model Atividade {
+  idAtividade        Int      @id @default(autoincrement())
+  tipo               String
+  dataHoraInicio     DateTime
+  dataHoraFim        DateTime
+  qntdMaximaOuvintes Int
+  titulo             String
+
+  fk_idEvento Int
+  evento      Evento @relation("EventoAtividades", fields: [fk_idEvento], references: [idEvento])
+
+  participacoes Participacao[] @relation("AtividadeParticipacoes")
+
+  @@map("atividade")
+}
+
 model Participante {
-  id               String   @id @default(uuid())
+  idParticipante   Int      @id @default(autoincrement())
+  nome             String
   cpf              String   @unique
   telefone         String
   email            String   @unique
-  dataDeNascimento DateTime @map("data_de_nascimento")
+  dataDeNascimento DateTime
+
+  participacoes Participacao[] @relation("ParticipanteParticipacoes")
 
   @@map("participante")
+}
+
+model Participacao {
+  idParticipacao Int    @id @default(autoincrement())
+  tipo           String
+
+  fk_idParticipante Int
+  fk_idAtividade    Int
+
+  participante Participante @relation("ParticipanteParticipacoes", fields: [fk_idParticipante], references: [idParticipante])
+  atividade    Atividade    @relation("AtividadeParticipacoes", fields: [fk_idAtividade], references: [idAtividade])
+
+  @@unique([fk_idParticipante, fk_idAtividade])
+  @@map("participacao")
 }

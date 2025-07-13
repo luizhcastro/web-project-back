@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
-import { ParticipacaoController } from './participacao.controller';
 import { ParticipacaoService } from './participacao.service';
+import { ParticipacaoController } from './participacao.controller';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
-        controllers: [ParticipacaoController],
-        providers: [ParticipacaoService]
+  imports: [PrismaModule],
+  controllers: [ParticipacaoController],
+  providers: [ParticipacaoService],
 })
 export class ParticipacaoModule {}

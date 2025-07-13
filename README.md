@@ -1,98 +1,308 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🚀 API de Gerenciamento de Eventos
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Este projeto contém uma API completa para gerenciar eventos, atividades, participantes e suas inscrições. A seguir estão as instruções para configurar e rodar o projeto em um ambiente de desenvolvimento local.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🛠️ Como Rodar o Projeto Localmente
 
-## Description
+Siga os passos abaixo para ter a aplicação funcionando na sua máquina.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### Pré-requisitos
 
-## Project setup
+Antes de começar, garanta que você tenha os seguintes softwares instalados:
+- **[Node.js](https://nodejs.org/)**: Versão 20.x ou superior.
+- **[Docker](https://www.docker.com/products/docker-desktop/)**: Para rodar o banco de dados PostgreSQL de forma isolada.
+- **[Git](https://git-scm.com/)**: Para clonar o repositório.
 
+### Passo 1: Clone o Repositório
+
+Abra seu terminal e clone este projeto para sua máquina local.
 ```bash
-$ npm install
+git clone <URL_DO_SEU_REPOSITORIO>
+cd projeto-eventos
 ```
 
-## Compile and run the project
+### Passo 2: Instale as Dependências
 
+Com o projeto clonado, instale todas as dependências necessárias usando o NPM.
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
 ```
 
-## Run tests
+### Passo 3: Suba o Banco de Dados com Docker
+
+Para a aplicação funcionar, ela precisa de um banco de dados PostgreSQL. O comando abaixo irá criar e rodar um container Docker com uma instância do Postgres pronta para uso.
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+docker run --name postgres-dev -e POSTGRES_PASSWORD=docker -p 5432:5432 -d postgres
 ```
+- Este comando cria um banco chamado `postgres-dev` com a senha `docker` e o expõe na porta `5432` da sua máquina.
 
-## Deployment
+### Passo 4: Configure as Variáveis de Ambiente
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+A aplicação usa um arquivo `.env` para guardar a string de conexão com o banco de dados.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+1. Crie um arquivo chamado `.env` na raiz do projeto.
+2. Adicione o seguinte conteúdo a ele:
+
+```env
+# .env
+DATABASE_URL="postgresql://postgres:docker@localhost:5432/mydb?schema=public"
+```
+- `postgres`: É o usuário padrão do PostgreSQL.
+- `docker`: Foi a senha que definimos no passo anterior.
+- `localhost:5432`: Endereço do nosso banco de dados.
+- `mydb`: Nome do banco de dados que será usado.
+
+### Passo 5: Aplique as Migrações do Banco
+
+Com o banco de dados rodando e a conexão configurada, use o Prisma para criar a estrutura de tabelas.
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npx prisma migrate dev
+```
+- Este comando irá ler o arquivo `prisma/schema.prisma`, criar as tabelas no banco de dados e gerar o Prisma Client atualizado.
+
+### Passo 6: Inicie a Aplicação
+
+Finalmente, inicie o servidor de desenvolvimento.
+
+```bash
+npm run start:dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+O terminal irá indicar que a aplicação foi iniciada com sucesso. Por padrão, ela estará rodando em `http://localhost:3000`. O modo de desenvolvimento (`--watch`) reiniciará o servidor automaticamente sempre que você salvar uma alteração nos arquivos.
 
-## Resources
+---
 
-Check out a few resources that may come in handy when working with NestJS:
+## 🔬 Ferramentas de Desenvolvimento
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### Prisma Studio
 
-## Support
+Este projeto vem com o Prisma, que inclui uma ferramenta visual incrível chamada **Prisma Studio**. Ela permite visualizar e editar os dados do seu banco de dados diretamente pelo navegador.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Para iniciá-la, rode o seguinte comando em um novo terminal (você pode deixar a aplicação rodando em outro):
 
-## Stay in touch
+```bash
+npx prisma studio
+```
+- Uma nova aba será aberta em `http://localhost:5555`, onde você poderá gerenciar suas tabelas (`Evento`, `Atividade`, etc.) de forma interativa.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+---
 
-## License
+## 📖 Documentação da API
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Esta é a documentação para a API de gerenciamento de eventos, atividades e participantes.
+
+**URL Base:** `http://localhost:3000`
+
+---
+
+## 🗓️ Eventos (`/evento`)
+
+#### `POST /evento`
+Cria um novo evento.
+
+**Body (raw/json):**
+```json
+{
+  "titulo": "Seminário de IA",
+  "edicao": "2024",
+  "tipo": "pago",
+  "dataHoraInicio": "2024-10-20T09:00:00.000Z",
+  "dataHoraFim": "2024-10-22T18:00:00.000Z",
+  "taxa": 50.00
+}
+```
+- `tipo` pode ser `"pago"` ou `"gratuito"`.
+- `taxa` é obrigatório apenas se o tipo for `"pago"`.
+
+---
+
+#### `GET /evento`
+Lista todos os eventos cadastrados.
+
+---
+
+#### `GET /evento/:id`
+Busca um evento específico pelo seu `id`.
+- **Exemplo:** `GET http://localhost:3000/evento/1`
+
+---
+
+#### `PATCH /evento/:id`
+Atualiza os dados de um evento. Envie no corpo da requisição apenas os campos que deseja alterar.
+- **Exemplo:** `PATCH http://localhost:3000/evento/1`
+- **Body (raw/json):**
+```json
+{
+  "titulo": "Novo Título do Seminário de IA"
+}
+```
+
+---
+
+#### `DELETE /evento/:id`
+Exclui um evento pelo seu `id`.
+- **Exemplo:** `DELETE http://localhost:3000/evento/1`
+
+---
+
+#### `GET /evento/:id/palestrantes`
+Lista todos os palestrantes de um evento específico.
+- **Exemplo:** `GET http://localhost:3000/evento/1/palestrantes`
+
+---
+
+#### `GET /evento/receita`
+Retorna a receita total arrecadada para cada evento pago.
+
+---
+
+## 🏃 Atividades (`/atividade`)
+
+#### `POST /atividade`
+Cria uma nova atividade associada a um evento.
+
+**Body (raw/json):**
+```json
+{
+  "tipo": "palestra",
+  "titulo": "Introdução ao NestJS",
+  "dataHoraInicio": "2024-10-20T10:00:00.000Z",
+  "dataHoraFim": "2024-10-20T12:00:00.000Z",
+  "qntdMaximaOuvintes": 100,
+  "fk_idEvento": 1
+}
+```
+- `tipo` pode ser `"palestra"`, `"minicurso"` ou `"mesa redonda"`.
+- `fk_idEvento` deve ser o `id` de um evento existente.
+
+---
+
+#### `GET /atividade`
+Lista todas as atividades cadastradas.
+
+---
+
+#### `GET /atividade/:id`
+Busca uma atividade específica pelo seu `id`.
+- **Exemplo:** `GET http://localhost:3000/atividade/1`
+
+---
+
+#### `PATCH /atividade/:id`
+Atualiza os dados de uma atividade.
+- **Exemplo:** `PATCH http://localhost:3000/atividade/1`
+- **Body (raw/json):**
+```json
+{
+  "qntdMaximaOuvintes": 120
+}
+```
+
+---
+
+#### `DELETE /atividade/:id`
+Exclui uma atividade pelo seu `id`.
+- **Exemplo:** `DELETE http://localhost:3000/atividade/1`
+
+---
+
+## 🧑‍🤝‍🧑 Participantes (`/participante`)
+
+#### `POST /participante`
+Cria um novo participante.
+
+**Body (raw/json):**
+```json
+{
+  "nome": "João da Silva",
+  "cpf": "123.456.789-00",
+  "telefone": "71999998888",
+  "email": "joao.silva@example.com",
+  "dataDeNascimento": "1990-05-15T00:00:00.000Z"
+}
+```
+
+---
+
+#### `GET /participante`
+Lista todos os participantes.
+
+---
+
+#### `GET /participante/:id`
+Busca um participante pelo seu `id`.
+- **Exemplo:** `GET http://localhost:3000/participante/1`
+
+---
+
+#### `PATCH /participante/:id`
+Atualiza os dados de um participante.
+- **Exemplo:** `PATCH http://localhost:3000/participante/1`
+- **Body (raw/json):**
+```json
+{
+  "telefone": "71988887777"
+}
+```
+
+---
+
+#### `DELETE /participante/:id`
+Exclui um participante pelo seu `id`.
+- **Exemplo:** `DELETE http://localhost:3000/participante/1`
+
+---
+
+#### `GET /participante/nascidos-em/:ano`
+Lista todos os participantes nascidos em um determinado ano.
+- **Exemplo:** `GET http://localhost:3000/participante/nascidos-em/1990`
+
+---
+
+## 🔗 Participações (`/participacao`)
+
+#### `POST /participacao`
+Registra a participação de uma pessoa em uma atividade.
+
+**Body (raw/json):**
+```json
+{
+  "tipo": "ouvinte",
+  "fk_idParticipante": 1,
+  "fk_idAtividade": 1
+}
+```
+- `tipo` pode ser `"organizador"`, `"palestrante"`, `"mediador"`, `"monitor"` ou `"ouvinte"`.
+- `fk_idParticipante` e `fk_idAtividade` devem ser `id`s existentes.
+
+---
+
+#### `GET /participacao`
+Lista todas as participações registradas.
+
+---
+
+#### `GET /participacao/:id`
+Busca uma participação pelo seu `id`.
+- **Exemplo:** `GET http://localhost:3000/participacao/1`
+
+---
+
+#### `PATCH /participacao/:id`
+Atualiza o tipo de uma participação.
+- **Exemplo:** `PATCH http://localhost:3000/participacao/1`
+- **Body (raw/json):**
+```json
+{
+  "tipo": "monitor"
+}
+```
+
+---
+
+#### `DELETE /participacao/:id`
+Exclui um registro de participação.
+- **Exemplo:** `DELETE http://localhost:3000/participacao/1`
+
