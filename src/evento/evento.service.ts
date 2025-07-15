@@ -6,7 +6,6 @@ import {
 import { CreateEventoDto, TipoEvento } from './dto/create-evento.dto';
 import { UpdateEventoDto } from './dto/update-evento.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class EventoService {
@@ -88,31 +87,6 @@ export class EventoService {
   async remove(id: number) {
     await this.findOne(id);
     return this.prisma.evento.delete({ where: { idEvento: id } });
-  }
-
-  async findPalestrantesByEvento(idEvento: number) {
-    await this.findOne(idEvento);
-
-    const participacoes = await this.prisma.participacao.findMany({
-      where: {
-        tipo: 'palestrante',
-        atividade: {
-          fk_idEvento: idEvento,
-        },
-      },
-      include: {
-        atividade: true,
-        participante: true,
-      },
-    });
-
-    return participacoes.map((p) => ({
-      tituloAtividade: p.atividade.titulo,
-      tipoAtividade: p.atividade.tipo,
-      dataHoraInicioAtividade: p.atividade.dataHoraInicio,
-      nomePalestrante: p.participante.nome,
-      emailPalestrante: p.participante.email,
-    }));
   }
 
   async findReceitaTotal() {

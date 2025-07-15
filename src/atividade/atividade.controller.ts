@@ -22,6 +22,11 @@ export class AtividadeController {
     return this.atividadeService.findOne(+id);
   }
 
+  @Get(':id/pessoas')
+  findPessoasByAtividade(@Param('id') id: string) {
+    return this.atividadeService.findPessoasByAtividade(+id);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateAtividadeDto: UpdateAtividadeDto) {
     return this.atividadeService.update(+id, updateAtividadeDto);

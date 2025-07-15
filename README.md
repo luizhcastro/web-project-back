@@ -147,12 +147,6 @@ Exclui um evento pelo seu `id`.
 
 ---
 
-#### `GET /evento/:id/palestrantes`
-Lista todos os palestrantes de um evento específico.
-- **Exemplo:** `GET http://localhost:3000/evento/1/palestrantes`
-
----
-
 #### `GET /evento/receita`
 Retorna a receita total arrecadada para cada evento pago.
 
@@ -205,6 +199,14 @@ Atualiza os dados de uma atividade.
 #### `DELETE /atividade/:id`
 Exclui uma atividade pelo seu `id`.
 - **Exemplo:** `DELETE http://localhost:3000/atividade/1`
+
+---
+
+#### `GET /atividade/:id/pessoas`
+Lista todas as pessoas (participantes) associadas a uma atividade específica, juntamente com sua função.
+
+- A lista é ordenada pela seguinte prioridade de função: `organizador`, `palestrante`, `mediador`, `monitor`, `ouvinte`.
+- **Exemplo:** `GET http://localhost:3000/atividade/1/pessoas`
 
 ---
 

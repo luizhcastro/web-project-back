@@ -116,4 +116,35 @@ export class AtividadeService {
     await this.findOne(id);
     return this.prisma.atividade.delete({ where: { idAtividade: id } });
   }
+
+  async findPessoasByAtividade(idAtividade: number) {
+    await this.findOne(idAtividade);
+
+    const participacoes = await this.prisma.participacao.findMany({
+      where: {
+        fk_idAtividade: idAtividade,
+      },
+      include: {
+        participante: true,
+      },
+    });
+
+    const roleOrder = [
+      'organizador',
+      'palestrante',
+      'mediador',
+      'monitor',
+      'ouvinte',
+    ];
+
+    participacoes.sort((a, b) => {
+      return roleOrder.indexOf(a.tipo) - roleOrder.indexOf(b.tipo);
+    });
+
+    return participacoes.map((p) => ({
+      nome: p.participante.nome,
+      email: p.participante.email,
+      funcao: p.tipo,
+    }));
+  }
 }

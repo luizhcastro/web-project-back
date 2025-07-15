@@ -27,11 +27,6 @@ export class EventoController {
     return this.eventoService.findOne(+id);
   }
 
-  @Get(':id/palestrantes')
-  findPalestrantesByEvento(@Param('id') id: string) {
-    return this.eventoService.findPalestrantesByEvento(+id);
-  }
-
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateEventoDto: UpdateEventoDto) {
     return this.eventoService.update(+id, updateEventoDto);
