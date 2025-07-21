@@ -34,15 +34,26 @@ export class AtividadeService {
       );
     }
 
-    if (new Date(dataHoraInicio) < new Date(evento.dataHoraInicio)) {
+    const eventStartTime = new Date(evento.dataHoraInicio);
+    const eventEndTime = new Date(evento.dataHoraFim);
+    const activityStartTime = new Date(dataHoraInicio);
+    const activityEndTime = new Date(dataHoraFim);
+
+    if (activityStartTime < eventStartTime) {
       throw new BadRequestException(
-        'A data de início da atividade não pode ser anterior à data de início do evento.',
+        `A data de início da atividade não pode ser anterior à data de início do evento. DATA DE INÍCIO DO EVENTO: ${eventStartTime.toLocaleString('pt-BR')}`,
       );
     }
 
-    if (new Date(dataHoraFim) > new Date(evento.dataHoraFim)) {
+    if (activityEndTime > eventEndTime) {
       throw new BadRequestException(
-        'A data de término da atividade não pode ser posterior à data de término do evento.',
+        `A data de término da atividade não pode ser posterior à data de término do evento. DATA DE TÉRMINO DO EVENTO: ${eventEndTime.toLocaleString('pt-BR')}`,
+      );
+    }
+
+    if (activityStartTime >= activityEndTime) {
+      throw new BadRequestException(
+        'A data de início da atividade não pode ser igual ou posterior à data de término da atividade.',
       );
     }
 
@@ -64,7 +75,7 @@ export class AtividadeService {
   }
 
   async update(id: number, updateAtividadeDto: UpdateAtividadeDto) {
-    const atividade = await this.findOne(id); 
+    const atividade = await this.findOne(id);
 
     if (updateAtividadeDto.titulo) {
       const atividadeExists = await this.prisma.atividade.findFirst({
@@ -94,15 +105,26 @@ export class AtividadeService {
       updateAtividadeDto.dataHoraInicio ?? atividade.dataHoraInicio;
     const dataHoraFim = updateAtividadeDto.dataHoraFim ?? atividade.dataHoraFim;
 
-    if (new Date(dataHoraInicio) < new Date(evento.dataHoraInicio)) {
+    const eventStartTime = new Date(evento.dataHoraInicio);
+    const eventEndTime = new Date(evento.dataHoraFim);
+    const activityStartTime = new Date(dataHoraInicio);
+    const activityEndTime = new Date(dataHoraFim);
+
+    if (activityStartTime < eventStartTime) {
       throw new BadRequestException(
-        'A data de início da atividade não pode ser anterior à data de início do evento.',
+        `A data de início da atividade não pode ser anterior à data de início do evento. DATA DE INÍCIO DO EVENTO: ${eventStartTime.toLocaleString('pt-BR')}`,
       );
     }
 
-    if (new Date(dataHoraFim) > new Date(evento.dataHoraFim)) {
+    if (activityEndTime > eventEndTime) {
       throw new BadRequestException(
-        'A data de término da atividade não pode ser posterior à data de término do evento.',
+        `A data de término da atividade não pode ser posterior à data de término do evento. DATA DE TÉRMINO DO EVENTO: ${eventEndTime.toLocaleString('pt-BR')}`,
+      );
+    }
+
+    if (activityStartTime >= activityEndTime) {
+      throw new BadRequestException(
+        'A data de início da atividade não pode ser igual ou posterior à data de término da atividade.',
       );
     }
 
